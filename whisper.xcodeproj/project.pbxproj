@@ -1,0 +1,607 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C1C5E6302CEB7180007219E4 /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = C1C5E62F2CEB7180007219E4 /* WhisperKit */; };
+		C1C5E6322CEB7180007219E4 /* whisperkit-cli in Frameworks */ = {isa = PBXBuildFile; productRef = C1C5E6312CEB7180007219E4 /* whisperkit-cli */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C1C5E6122CEB7149007219E4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C1C5E5F62CEB7149007219E4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C1C5E5FD2CEB7149007219E4;
+			remoteInfo = whisper;
+		};
+		C1C5E61C2CEB7149007219E4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C1C5E5F62CEB7149007219E4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C1C5E5FD2CEB7149007219E4;
+			remoteInfo = whisper;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		C1C5E5FE2CEB7149007219E4 /* whisper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = whisper.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C1C5E6112CEB7149007219E4 /* whisperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = whisperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C1C5E61B2CEB7149007219E4 /* whisperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = whisperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		C1C5E6342CEB74BF007219E4 /* Exceptions for "whisper" folder in "whisper" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = C1C5E5FD2CEB7149007219E4 /* whisper */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		C1C5E6002CEB7149007219E4 /* whisper */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				C1C5E6342CEB74BF007219E4 /* Exceptions for "whisper" folder in "whisper" target */,
+			);
+			path = whisper;
+			sourceTree = "<group>";
+		};
+		C1C5E6142CEB7149007219E4 /* whisperTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = whisperTests;
+			sourceTree = "<group>";
+		};
+		C1C5E61E2CEB7149007219E4 /* whisperUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = whisperUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C1C5E5FB2CEB7149007219E4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C1C5E6302CEB7180007219E4 /* WhisperKit in Frameworks */,
+				C1C5E6322CEB7180007219E4 /* whisperkit-cli in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C1C5E60E2CEB7149007219E4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C1C5E6182CEB7149007219E4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C1C5E5F52CEB7149007219E4 = {
+			isa = PBXGroup;
+			children = (
+				C1C5E6002CEB7149007219E4 /* whisper */,
+				C1C5E6142CEB7149007219E4 /* whisperTests */,
+				C1C5E61E2CEB7149007219E4 /* whisperUITests */,
+				C1C5E5FF2CEB7149007219E4 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C1C5E5FF2CEB7149007219E4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C1C5E5FE2CEB7149007219E4 /* whisper.app */,
+				C1C5E6112CEB7149007219E4 /* whisperTests.xctest */,
+				C1C5E61B2CEB7149007219E4 /* whisperUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C1C5E5FD2CEB7149007219E4 /* whisper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C1C5E6252CEB7149007219E4 /* Build configuration list for PBXNativeTarget "whisper" */;
+			buildPhases = (
+				C1C5E5FA2CEB7149007219E4 /* Sources */,
+				C1C5E5FB2CEB7149007219E4 /* Frameworks */,
+				C1C5E5FC2CEB7149007219E4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				C1C5E6002CEB7149007219E4 /* whisper */,
+			);
+			name = whisper;
+			packageProductDependencies = (
+				C1C5E62F2CEB7180007219E4 /* WhisperKit */,
+				C1C5E6312CEB7180007219E4 /* whisperkit-cli */,
+			);
+			productName = whisper;
+			productReference = C1C5E5FE2CEB7149007219E4 /* whisper.app */;
+			productType = "com.apple.product-type.application";
+		};
+		C1C5E6102CEB7149007219E4 /* whisperTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C1C5E6282CEB7149007219E4 /* Build configuration list for PBXNativeTarget "whisperTests" */;
+			buildPhases = (
+				C1C5E60D2CEB7149007219E4 /* Sources */,
+				C1C5E60E2CEB7149007219E4 /* Frameworks */,
+				C1C5E60F2CEB7149007219E4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C1C5E6132CEB7149007219E4 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				C1C5E6142CEB7149007219E4 /* whisperTests */,
+			);
+			name = whisperTests;
+			packageProductDependencies = (
+			);
+			productName = whisperTests;
+			productReference = C1C5E6112CEB7149007219E4 /* whisperTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		C1C5E61A2CEB7149007219E4 /* whisperUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C1C5E62B2CEB7149007219E4 /* Build configuration list for PBXNativeTarget "whisperUITests" */;
+			buildPhases = (
+				C1C5E6172CEB7149007219E4 /* Sources */,
+				C1C5E6182CEB7149007219E4 /* Frameworks */,
+				C1C5E6192CEB7149007219E4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C1C5E61D2CEB7149007219E4 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				C1C5E61E2CEB7149007219E4 /* whisperUITests */,
+			);
+			name = whisperUITests;
+			packageProductDependencies = (
+			);
+			productName = whisperUITests;
+			productReference = C1C5E61B2CEB7149007219E4 /* whisperUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C1C5E5F62CEB7149007219E4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1610;
+				LastUpgradeCheck = 1610;
+				TargetAttributes = {
+					C1C5E5FD2CEB7149007219E4 = {
+						CreatedOnToolsVersion = 16.1;
+					};
+					C1C5E6102CEB7149007219E4 = {
+						CreatedOnToolsVersion = 16.1;
+						TestTargetID = C1C5E5FD2CEB7149007219E4;
+					};
+					C1C5E61A2CEB7149007219E4 = {
+						CreatedOnToolsVersion = 16.1;
+						TestTargetID = C1C5E5FD2CEB7149007219E4;
+					};
+				};
+			};
+			buildConfigurationList = C1C5E5F92CEB7149007219E4 /* Build configuration list for PBXProject "whisper" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = C1C5E5F52CEB7149007219E4;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				C1C5E62E2CEB717F007219E4 /* XCRemoteSwiftPackageReference "WhisperKit" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = C1C5E5FF2CEB7149007219E4 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C1C5E5FD2CEB7149007219E4 /* whisper */,
+				C1C5E6102CEB7149007219E4 /* whisperTests */,
+				C1C5E61A2CEB7149007219E4 /* whisperUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C1C5E5FC2CEB7149007219E4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C1C5E60F2CEB7149007219E4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C1C5E6192CEB7149007219E4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C1C5E5FA2CEB7149007219E4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C1C5E60D2CEB7149007219E4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C1C5E6172CEB7149007219E4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C1C5E6132CEB7149007219E4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C1C5E5FD2CEB7149007219E4 /* whisper */;
+			targetProxy = C1C5E6122CEB7149007219E4 /* PBXContainerItemProxy */;
+		};
+		C1C5E61D2CEB7149007219E4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C1C5E5FD2CEB7149007219E4 /* whisper */;
+			targetProxy = C1C5E61C2CEB7149007219E4 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		C1C5E6232CEB7149007219E4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.1;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		C1C5E6242CEB7149007219E4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		C1C5E6262CEB7149007219E4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = whisper/whisper.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"whisper/Preview Content\"";
+				DEVELOPMENT_TEAM = Z889TDRYB6;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = whisper/Info.plist;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.app.vanhovev.whisper;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		C1C5E6272CEB7149007219E4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = whisper/whisper.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"whisper/Preview Content\"";
+				DEVELOPMENT_TEAM = Z889TDRYB6;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = whisper/Info.plist;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.app.vanhovev.whisper;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		C1C5E6292CEB7149007219E4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Z889TDRYB6;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.app.vanhovev.whisperTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/whisper.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/whisper";
+			};
+			name = Debug;
+		};
+		C1C5E62A2CEB7149007219E4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Z889TDRYB6;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.app.vanhovev.whisperTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/whisper.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/whisper";
+			};
+			name = Release;
+		};
+		C1C5E62C2CEB7149007219E4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Z889TDRYB6;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.app.vanhovev.whisperUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = whisper;
+			};
+			name = Debug;
+		};
+		C1C5E62D2CEB7149007219E4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Z889TDRYB6;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.app.vanhovev.whisperUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = whisper;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C1C5E5F92CEB7149007219E4 /* Build configuration list for PBXProject "whisper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C1C5E6232CEB7149007219E4 /* Debug */,
+				C1C5E6242CEB7149007219E4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C1C5E6252CEB7149007219E4 /* Build configuration list for PBXNativeTarget "whisper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C1C5E6262CEB7149007219E4 /* Debug */,
+				C1C5E6272CEB7149007219E4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C1C5E6282CEB7149007219E4 /* Build configuration list for PBXNativeTarget "whisperTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C1C5E6292CEB7149007219E4 /* Debug */,
+				C1C5E62A2CEB7149007219E4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C1C5E62B2CEB7149007219E4 /* Build configuration list for PBXNativeTarget "whisperUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C1C5E62C2CEB7149007219E4 /* Debug */,
+				C1C5E62D2CEB7149007219E4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C1C5E62E2CEB717F007219E4 /* XCRemoteSwiftPackageReference "WhisperKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/argmaxinc/WhisperKit";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C1C5E62F2CEB7180007219E4 /* WhisperKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C1C5E62E2CEB717F007219E4 /* XCRemoteSwiftPackageReference "WhisperKit" */;
+			productName = WhisperKit;
+		};
+		C1C5E6312CEB7180007219E4 /* whisperkit-cli */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C1C5E62E2CEB717F007219E4 /* XCRemoteSwiftPackageReference "WhisperKit" */;
+			productName = "whisperkit-cli";
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = C1C5E5F62CEB7149007219E4 /* Project object */;
+}
