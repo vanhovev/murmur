@@ -1,3 +1,10 @@
+//
+//  ContentView.swift
+//  whisper
+//
+//  Created by Valentin Vanhove on 18/11/2024.
+//
+
 import SwiftUI
 import WhisperKit
 import AVFoundation
@@ -10,111 +17,87 @@ struct ContentView: View {
     @AppStorage("selectedAudioInput") private var selectedAudioInput: String = "No Audio Input"
     @AppStorage("selectedModel") private var selectedModel: String = WhisperKit.recommendedModels().default
     @AppStorage("selectedLanguage") private var selectedLanguage: String = "english"
-    @Query private var items: [Item]
-
+    @Query private var model: [Model]
+    
     @State private var transcription: String = ""
     @State private var availableModels: [String] = []
     @State private var availableLanguages: [String] = []
     @State private var modelState: ModelState = .unloaded
     @State private var loadingProgressValue: Float = 0.0
     @State private var whisperKit: WhisperKit?
-
+    
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
+        
+        VStack {
+            
+            
+            HStack {
+                Picker("", selection: $selectedModel) {
+                    ForEach(availableModels, id: \.self) { model in
+                        Text(model).tag(model)
                     }
                 }
-                .onDelete(perform: deleteItems)
-            }
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200)
-            .toolbar {
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
+                .pickerStyle(MenuPickerStyle())
+                .padding()
+                .onChange(of: selectedModel) { newValue in
+                    loadModel(selectedModel)
                 }
-            }
-        } detail: {
-            VStack {
-                Text("Glissez-déposez un fichier audio ici")
-
-                List(availableModels, id: \.self) { model in
-                    Button(model) {
-                        loadModel(model)
-                    }
-                }
-
-                Picker("Select Language", selection: $selectedLanguage) {
+                
+                Picker("", selection: $selectedLanguage) {
                     ForEach(availableLanguages, id: \.self) { language in
                         Text(language).tag(language)
                     }
                 }
                 .pickerStyle(MenuPickerStyle())
                 .padding()
-
-                Text("Selected Model: \(selectedModel)")
-                    .padding()
-
-                Text("Selected Language: \(selectedLanguage)")
-                    .padding()
-
-                ZStack {
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.gray.opacity(0.2))
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .overlay(
-                            Text("Glissez et déposez ici")
-                                .foregroundColor(.gray)
-                        )
-                        .onDrop(of: [.fileURL], isTargeted: nil) { providers in
-                            if let provider = providers.first {
-                                provider.loadObject(ofClass: URL.self) { url, _ in
-                                    if let audioURL = url as? URL {
-                                        self.transcribeAudio(from: audioURL)
-                                    }
-                                }
-                            }
-                            return true
-                        }
-                }
+            }
+            
+            Spacer()
+            
+            
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color.gray.opacity(0.2))
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding()
-
-                if !transcription.isEmpty {
-                    Text("Transcription:")
+                .overlay(
                     Text(transcription)
                         .padding()
-                } else {
-                    Text("Sélectionnez un fichier audio pour la transcription.")
-                }
+                )
+            
+            
+            Spacer()
+            
+            ZStack {
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color.gray.opacity(0.2))
+                    .frame(maxWidth: 100.0, maxHeight: 50.0)
+                    .overlay(
+                        Image(systemName: "document.fill")
+                            .foregroundColor(.gray)
+                    )
+                    .onDrop(of: [.fileURL], isTargeted: nil) { providers in
+                        if let provider = providers.first {
+                            provider.loadObject(ofClass: URL.self) { url, _ in
+                                if let audioURL = url as? URL {
+                                    self.transcribeAudio(from: audioURL)
+                                }
+                            }
+                        }
+                        return true
+                    }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .onAppear {
-                fetchModels()
-                fetchLanguages()
+            .padding()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .onAppear {
+            fetchModels()
+            fetchLanguages()
+            if !selectedModel.isEmpty {
+                loadModel(selectedModel)
             }
         }
     }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
-            }
-        }
-    }
-
+    
     private func transcribeAudio(from audioURL: URL) {
         Task {
             do {
@@ -122,7 +105,7 @@ struct ContentView: View {
                     self.transcription = "Le modèle n'est pas chargé."
                     return
                 }
-
+                
                 let languageCode = Constants.languages[selectedLanguage, default: Constants.defaultLanguageCode]
                 let options = DecodingOptions(
                     verbose: true,
@@ -138,9 +121,9 @@ struct ContentView: View {
                     wordTimestamps: true,
                     chunkingStrategy: .vad
                 )
-
+                
                 let transcriptionResults = try await whisperKit.transcribe(audioPath: audioURL.path, decodeOptions: options)
-
+                
                 if let firstTranscription = transcriptionResults.first?.text {
                     self.transcription = firstTranscription
                 } else {
@@ -151,42 +134,54 @@ struct ContentView: View {
             }
         }
     }
-
+    
     private func fetchModels() {
         Task {
             do {
                 let remoteModels = await WhisperKit.recommendedRemoteModels()
                 availableModels = remoteModels.supported
-                availableModels.append(contentsOf: localModels())
+                
+                let localModelsList = localModels()
+                availableModels.append(contentsOf: localModelsList)
+                
+                if let selectedModel = availableModels.first(where: { $0 == self.selectedModel }) {
+                    loadModel(selectedModel)
+                } else if let firstLocalModel = localModelsList.first {
+                    self.selectedModel = firstLocalModel
+                    loadModel(firstLocalModel)
+                }
             }
         }
     }
-
+    
     private func fetchLanguages() {
         availableLanguages = Constants.languages.map { $0.key }.sorted()
     }
-
+    
     private func localModels() -> [String] {
-        if let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let modelPath = documents.appendingPathComponent("whisper_models")
-            if let downloadedModels = try? FileManager.default.contentsOfDirectory(atPath: modelPath.path) {
-                return WhisperKit.formatModelFiles(downloadedModels)
+        if let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            let modelPath = documentsDirectory.appendingPathComponent("whisper_models")
+            do {
+                if FileManager.default.fileExists(atPath: modelPath.path) {
+                    let downloadedModels = try FileManager.default.contentsOfDirectory(atPath: modelPath.path)
+                    return WhisperKit.formatModelFiles(downloadedModels)
+                }
+            } catch {
+                print("Erreur lors de la lecture des modèles locaux : \(error)")
             }
         }
         return []
     }
-
+    
     private func loadModel(_ model: String) {
         print("Chargement du modèle \(model)")
-
+        
         Task {
             do {
                 let whisperKitConfig = WhisperKitConfig(model: model)
-
                 whisperKit = try await WhisperKit(whisperKitConfig)
-
+                
                 print("Modèle \(model) chargé avec succès.")
-
             } catch {
                 print("Erreur lors du chargement du modèle : \(error.localizedDescription)")
             }
@@ -196,5 +191,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+        .modelContainer(for: Model.self, inMemory: true)
 }

@@ -53,16 +53,6 @@
 			path = whisper;
 			sourceTree = "<group>";
 		};
-		C1C5E6142CEB7149007219E4 /* whisperTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = whisperTests;
-			sourceTree = "<group>";
-		};
-		C1C5E61E2CEB7149007219E4 /* whisperUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = whisperUITests;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,8 +86,6 @@
 			isa = PBXGroup;
 			children = (
 				C1C5E6002CEB7149007219E4 /* whisper */,
-				C1C5E6142CEB7149007219E4 /* whisperTests */,
-				C1C5E61E2CEB7149007219E4 /* whisperUITests */,
 				C1C5E5FF2CEB7149007219E4 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -152,9 +140,6 @@
 			dependencies = (
 				C1C5E6132CEB7149007219E4 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				C1C5E6142CEB7149007219E4 /* whisperTests */,
-			);
 			name = whisperTests;
 			packageProductDependencies = (
 			);
@@ -174,9 +159,6 @@
 			);
 			dependencies = (
 				C1C5E61D2CEB7149007219E4 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				C1C5E61E2CEB7149007219E4 /* whisperUITests */,
 			);
 			name = whisperUITests;
 			packageProductDependencies = (
