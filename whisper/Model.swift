@@ -68,14 +68,16 @@ final class Model: ObservableObject {
     }
     
     func loadModel(_ model: String) {
-        modelState = .loading
-        print("Chargement du modèle \(model)")
+    
+        DispatchQueue.main.async {
+            self.modelState = .loading
+        }
 
         Task {
             do {
                 let computeOptions = ModelComputeOptions(
-                    audioEncoderCompute: .cpuAndNeuralEngine,
-                    textDecoderCompute: .cpuAndNeuralEngine
+                    audioEncoderCompute: .all,
+                    textDecoderCompute: .all
                 )
                 let whisperKitConfig = WhisperKitConfig(model: model, computeOptions: computeOptions)
                 let newWhisperKit = try await WhisperKit(whisperKitConfig)

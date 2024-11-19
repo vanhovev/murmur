@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C1BB56B62CECDE49009AEECC /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = C1BB56B52CECDE3F009AEECC /* .gitignore */; };
 		C1C5E6302CEB7180007219E4 /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = C1C5E62F2CEB7180007219E4 /* WhisperKit */; };
 		C1C5E6322CEB7180007219E4 /* whisperkit-cli in Frameworks */ = {isa = PBXBuildFile; productRef = C1C5E6312CEB7180007219E4 /* whisperkit-cli */; };
 /* End PBXBuildFile section */
@@ -29,6 +30,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C1BB56B52CECDE3F009AEECC /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		C1C5E5FE2CEB7149007219E4 /* whisper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = whisper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1C5E6112CEB7149007219E4 /* whisperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = whisperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1C5E61B2CEB7149007219E4 /* whisperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = whisperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -85,6 +87,7 @@
 		C1C5E5F52CEB7149007219E4 = {
 			isa = PBXGroup;
 			children = (
+				C1BB56B52CECDE3F009AEECC /* .gitignore */,
 				C1C5E6002CEB7149007219E4 /* whisper */,
 				C1C5E5FF2CEB7149007219E4 /* Products */,
 			);
@@ -219,6 +222,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C1BB56B62CECDE49009AEECC /* .gitignore in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

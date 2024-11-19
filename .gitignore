@@ -1,0 +1,9 @@
+//
+//  .gitignore
+//  whisper
+//
+//  Created by Valentin Vanhove on 19/11/2024.
+//
+
+.DS_Store
+

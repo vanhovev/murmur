@@ -18,7 +18,6 @@ struct ContentView: View {
     
     @ObservedObject var model: Model
     @State private var transcription: String = ""
-    @State private var loadingProgressValue: Float = 0.0
     @State private var isTranscribing: Bool = false
     @State private var transcribeTask: Task<Void, Never>?
     @State private var toggleIcon = false
@@ -27,7 +26,7 @@ struct ContentView: View {
     var body: some View {
         VStack {
             RoundedRectangle(cornerRadius: 10)
-                .fill(isTranscribing ? Color.green.opacity(0.2) : model.modelState == .loaded ? Color.gray.opacity(0.2) : Color.red.opacity(0.2))
+                .fill(Color.gray.opacity(0.2))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding([.top, .leading, .trailing])
                 .padding(.bottom, 10)
@@ -48,10 +47,17 @@ struct ContentView: View {
                                     .padding(25.0)
                                 Spacer()
                             } else {
-                                Image(systemName: "arrow.down.document")
-                                    .font(.system(size: 50))
-                                    .foregroundStyle(.secondary)
-                                    .symbolEffect(.wiggle, options: .speed(0.1))
+                                if(isTranscribing){
+                                    Image(systemName: "waveform")
+                                        .font(.system(size: 50))
+                                        .foregroundStyle(.secondary)
+                                        .symbolEffect(.variableColor)
+                                } else{
+                                    Image(systemName: "arrow.down.document")
+                                        .font(.system(size: 50))
+                                        .foregroundStyle(.secondary)
+                                        .symbolEffect(.wiggle, options: .speed(0.1))
+                                }
                             }
                     }
                 )
@@ -59,46 +65,23 @@ struct ContentView: View {
             
             Spacer()
             
-            VStack {
-                HStack {
-                    Text(model.selectedModel)
-                    Text("•")
-                    Text(model.selectedLanguage)
-                    Text("•")
-                    Text(model.modelState.description)
-                }
-                HStack {
-                    Text(WhisperKit.deviceName())
-                    Text("•")
-                    Text(ProcessInfo.processInfo.operatingSystemVersionString)
-                }
-            }
-            .padding(.bottom)
-            .font(.system(.caption, design: .monospaced))
-            .foregroundColor(.secondary)
-            
-            if let whisperKit = model.whisperKit,
-               isTranscribing,
-               let task = transcribeTask,
-               !task.isCancelled,
-               whisperKit.progress.fractionCompleted < 1
-            {
-                HStack {
-                    ProgressView(whisperKit.progress)
-                        .progressViewStyle(.linear)
-                        .labelsHidden()
-                        .padding(.horizontal)
-                    
-                    Button {
-                        transcribeTask?.cancel()
-                        transcribeTask = nil
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(.secondary)
+                VStack {
+                    HStack {
+                        Text(model.selectedModel)
+                        Text("•")
+                        Text(model.selectedLanguage)
+                        Text("•")
+                        Text(model.modelState.description)
                     }
-                    .buttonStyle(BorderlessButtonStyle())
+                    HStack {
+                        Text(WhisperKit.deviceName())
+                        Text("•")
+                        Text(ProcessInfo.processInfo.operatingSystemVersionString)
+                    }
                 }
-            }
+                .padding(.bottom)
+                .font(.system(.caption, design: .monospaced))
+                .foregroundColor(.secondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -110,7 +93,6 @@ struct ContentView: View {
                 isTranscribing = true
             }
             do {
-                print(model.whisperKit ?? "null")
                 guard let whisperKit = model.whisperKit else {
                     self.transcription = "Not loaded"
                     return
@@ -132,7 +114,9 @@ struct ContentView: View {
                     chunkingStrategy: .vad
                 )
                 
+                print("START TRANSCRIBE")
                 let transcriptionResults = try await whisperKit.transcribe(audioPath: audioURL.path, decodeOptions: options)
+                print("END TRANSCRIBE")
                 
                 if let firstTranscription = transcriptionResults.first?.text {
                     self.transcription = firstTranscription
@@ -149,33 +133,8 @@ struct ContentView: View {
         }
     }
     
-    func updateProgressBar(targetProgress: Float, maxTime: TimeInterval) async {
-        let initialProgress = loadingProgressValue
-        let decayConstant = -log(1 - targetProgress) / Float(maxTime)
-        
-        let startTime = Date()
-        
-        while true {
-            let elapsedTime = Date().timeIntervalSince(startTime)
-            
-            let decayFactor = exp(-decayConstant * Float(elapsedTime))
-            let progressIncrement = (1 - initialProgress) * (1 - decayFactor)
-            let currentProgress = initialProgress + progressIncrement
-            
-            await MainActor.run {
-                loadingProgressValue = currentProgress
-            }
-            
-            if currentProgress >= targetProgress {
-                break
-            }
-            
-            do {
-                try await Task.sleep(nanoseconds: 100_000_000)
-            } catch {
-                break
-            }
-        }
+    private func clear() {
+        transcription.removeAll()
     }
 }
 
