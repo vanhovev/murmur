@@ -11,6 +11,7 @@ import WhisperKit
 import SwiftUI
 
 final class Model: ObservableObject {
+    static let shared = Model()
     @Published var availableModels: [String] = []
     @AppStorage("selectedModel") var selectedModel: String = WhisperKit.recommendedModels().default
     @Published var availableLanguages: [String] = []
@@ -73,7 +74,7 @@ final class Model: ObservableObject {
                     textDecoderCompute: .cpuAndNeuralEngine
                 )
                 let whisperKitConfig = WhisperKitConfig(model: model, computeOptions: computeOptions)
-                let whisperKit = try await WhisperKit(whisperKitConfig)
+                _ = try await WhisperKit(whisperKitConfig)
 
                 DispatchQueue.main.async {
                     print("Modèle \(model) chargé avec succès.")
@@ -85,4 +86,41 @@ final class Model: ObservableObject {
             }
         }
     }
+    
+    func addElementOnMenu(menu: NSMenu) {
+            let modelMenuItem = NSMenuItem(title: "Model", action: nil, keyEquivalent: "")
+            let modelMenu = NSMenu()
+            let languageMenuItem = NSMenuItem(title: "Language", action: nil, keyEquivalent: "")
+            let languageMenu = NSMenu()
+
+            for model in availableModels {
+                let modelItem = NSMenuItem(title: model, action: #selector(modelMenuItemClicked(_:)), keyEquivalent: "")
+                modelItem.representedObject = model
+                modelMenu.addItem(modelItem)
+            }
+
+            for language in availableLanguages {
+                let languageItem = NSMenuItem(title: language, action: #selector(languageMenuItemClicked(_:)), keyEquivalent: "")
+                languageItem.representedObject = language
+                languageMenu.addItem(languageItem)
+            }
+
+            modelMenuItem.submenu = modelMenu
+            languageMenuItem.submenu = languageMenu
+            menu.addItem(modelMenuItem)
+            menu.addItem(languageMenuItem)
+        }
+
+        @objc func modelMenuItemClicked(_ sender: NSMenuItem) {
+            if let model = sender.representedObject as? String {
+                selectedModel = model
+                loadModel(model)
+            }
+        }
+
+        @objc func languageMenuItemClicked(_ sender: NSMenuItem) {
+            if let language = sender.representedObject as? String {
+                selectedLanguage = language
+            }
+        }
 }

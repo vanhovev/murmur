@@ -16,7 +16,7 @@ struct ContentView: View {
     @State private var modelStorage: String = "huggingface/models/argmaxinc/whisperkit-coreml"
     @AppStorage("selectedAudioInput") private var selectedAudioInput: String = "No Audio Input"
 
-    @StateObject private var model = Model()
+    @ObservedObject var model: Model  
     @State private var transcription: String = ""
     @State private var modelState: ModelState = .unloaded
     @State private var loadingProgressValue: Float = 0.0
@@ -132,6 +132,9 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    @Previewable var model = Model()
+
+    
+    ContentView(model: model)
         //.modelContainer(for: Model.self, inMemory: true)
 }

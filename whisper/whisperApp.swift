@@ -9,8 +9,9 @@
 import SwiftUI
 
 @main
-struct Border_BarApp: App {
+struct whisperApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
     var body: some Scene {
         Settings {
             EmptyView()
@@ -18,14 +19,14 @@ struct Border_BarApp: App {
     }
 }
 
-
 class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
-    //static private(set) var instance: AppDelegate!
+    static private(set) var instance: AppDelegate!
     lazy var statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
     var window: NSWindow?
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        //AppDelegate.instance = self
+        AppDelegate.instance = self
+
         statusItem.button?.action = #selector(handleClick(_:))
         statusItem.button?.target = self
         statusItem.button?.image = NSImage(systemSymbolName: "waveform", accessibilityDescription: nil)
@@ -35,24 +36,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     @objc func handleClick(_ sender: NSButton) {
         let event = NSApp.currentEvent!
         if event.type == NSEvent.EventType.rightMouseUp {
-            // Handle right-click
             openMenu()
         } else {
-            // Handle left-click
             openView()
         }
     }
 
     func openView() {
         if window == nil {
-            let contentView = ContentView()
+            let contentView = ContentView(model: Model.shared)
             let hostingController = NSHostingController(rootView: contentView)
             window = NSWindow(contentViewController: hostingController)
             window?.setContentSize(NSSize(width: 500, height: 350))
             window?.title = "Whisper"
-            
             window?.level = .floating
-            
             window?.makeKeyAndOrderFront(nil)
         } else {
             window?.makeKeyAndOrderFront(nil)
@@ -61,21 +58,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func openMenu() {
         let menu = NSMenu()
-        let modelMenuItem = NSMenuItem(title: "Model", action: nil, keyEquivalent: "")
-        let modelMenu = NSMenu()
-        let languageMenuItem = NSMenuItem(title: "Language", action: nil, keyEquivalent: "")
-        let languageMenu = NSMenu()
 
-        let subMenuModelItem = NSMenuItem(title: "Sub Item", action: #selector(subMenuItemClicked(_:)), keyEquivalent: "")
-        modelMenu.addItem(subMenuModelItem)
-        
-        let subMenuLanguageItem = NSMenuItem(title: "Sub Item Language", action: #selector(subMenuItemClicked(_:)), keyEquivalent: "")
-        languageMenu.addItem(subMenuLanguageItem)
-
-        modelMenuItem.submenu = modelMenu
-        languageMenuItem.submenu = languageMenu
-        menu.addItem(modelMenuItem)
-        menu.addItem(languageMenuItem)
+        Model.shared.addElementOnMenu(menu: menu)
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
 
