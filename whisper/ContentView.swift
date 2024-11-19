@@ -25,31 +25,6 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
-            HStack {
-                Picker("", selection: $model.selectedModel) {
-                    ForEach(model.availableModels, id: \.self) { model in
-                        Text(model).tag(model)
-                    }
-                }
-                .pickerStyle(MenuPickerStyle())
-                .padding()
-                .onChange(of: model.selectedModel) { newValue in
-                    model.loadModel(newValue)
-                }
-                .disabled(inProgress)
-
-                Picker("", selection: $model.selectedLanguage) {
-                    ForEach(model.availableLanguages, id: \.self) { language in
-                        Text(language).tag(language)
-                    }
-                }
-                .pickerStyle(MenuPickerStyle())
-                .padding()
-                .disabled(inProgress)
-            }
-
-            Spacer()
-
             RoundedRectangle(cornerRadius: 10)
                 .fill(Color.gray.opacity(0.2))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
