@@ -96,6 +96,7 @@ final class Model: ObservableObject {
         for model in availableModels {
             let modelItem = NSMenuItem(title: model, action: #selector(modelMenuItemClicked(_:)), keyEquivalent: "")
             modelItem.representedObject = model
+            modelItem.target = self
             
             if model == selectedModel {
                 modelItem.state = .on
@@ -109,6 +110,7 @@ final class Model: ObservableObject {
         for language in availableLanguages {
             let languageItem = NSMenuItem(title: language, action: #selector(languageMenuItemClicked(_:)), keyEquivalent: "")
             languageItem.representedObject = language
+            languageItem.target = self
             
             if language == selectedLanguage {
                 languageItem.state = .on

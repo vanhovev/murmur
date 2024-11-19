@@ -28,34 +28,34 @@ struct ContentView: View {
             RoundedRectangle(cornerRadius: 10)
                 .fill(Color.gray.opacity(0.2))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .padding()
+                .padding([.top, .leading, .trailing])
+                .padding(.bottom, 10)
+                .onDrop(of: [.fileURL], isTargeted: nil) { providers in
+                    if let provider = providers.first {
+                        provider.loadObject(ofClass: URL.self) { url, _ in
+                            if let audioURL = url as? URL {
+                                self.transcribeAudio(from: audioURL)
+                            }
+                        }
+                    }
+                    return true
+                }
                 .overlay(
                     Text(transcription)
                         .padding()
+                        .frame(maxWidth: .infinity, alignment: .top)
                 )
 
             Spacer()
 
-            ZStack {
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(Color.gray.opacity(inProgress ? 0.5 : 0.2))
-                    .frame(maxWidth: 100.0, maxHeight: 50.0)
-                    .overlay(
-                        Image(systemName: "document.fill")
-                            .foregroundColor(.gray)
-                    )
-                    .onDrop(of: [.fileURL], isTargeted: nil) { providers in
-                        if let provider = providers.first {
-                            provider.loadObject(ofClass: URL.self) { url, _ in
-                                if let audioURL = url as? URL {
-                                    self.transcribeAudio(from: audioURL)
-                                }
-                            }
-                        }
-                        return true
-                    }
+            HStack {
+                Text(model.selectedModel)
+                Text("•")
+                Text(model.selectedLanguage)
             }
-            .padding()
+            .padding(.bottom)
+            .font(.system(.caption, design: .monospaced))
+            .foregroundColor(.secondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
