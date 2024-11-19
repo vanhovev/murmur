@@ -5,7 +5,7 @@
 //  Created by Valentin Vanhove on 18/11/2024.
 //
 
-import Cocoa
+
 import SwiftUI
 
 @main
@@ -18,13 +18,14 @@ struct Border_BarApp: App {
     }
 }
 
+
 class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
-    static private(set) var instance: AppDelegate!
+    //static private(set) var instance: AppDelegate!
     lazy var statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
     var window: NSWindow?
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        AppDelegate.instance = self
+        //AppDelegate.instance = self
         statusItem.button?.action = #selector(handleClick(_:))
         statusItem.button?.target = self
         statusItem.button?.image = NSImage(systemSymbolName: "waveform", accessibilityDescription: nil)
@@ -48,6 +49,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             let hostingController = NSHostingController(rootView: contentView)
             window = NSWindow(contentViewController: hostingController)
             window?.setContentSize(NSSize(width: 500, height: 350))
+            window?.title = "Whisper"
             
             window?.level = .floating
             
@@ -59,8 +61,22 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func openMenu() {
         let menu = NSMenu()
-        //menu.addItem(NSMenuItem(title: "Menu Item", action: #selector(menuItemClicked(_:)), keyEquivalent: ""))
-        //menu.addItem(NSMenuItem.separator())
+        let modelMenuItem = NSMenuItem(title: "Model", action: nil, keyEquivalent: "")
+        let modelMenu = NSMenu()
+        let languageMenuItem = NSMenuItem(title: "Language", action: nil, keyEquivalent: "")
+        let languageMenu = NSMenu()
+
+        let subMenuModelItem = NSMenuItem(title: "Sub Item", action: #selector(subMenuItemClicked(_:)), keyEquivalent: "")
+        modelMenu.addItem(subMenuModelItem)
+        
+        let subMenuLanguageItem = NSMenuItem(title: "Sub Item Language", action: #selector(subMenuItemClicked(_:)), keyEquivalent: "")
+        languageMenu.addItem(subMenuLanguageItem)
+
+        modelMenuItem.submenu = modelMenu
+        languageMenuItem.submenu = languageMenu
+        menu.addItem(modelMenuItem)
+        menu.addItem(languageMenuItem)
+        menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
 
         statusItem.menu = menu
@@ -69,7 +85,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         statusItem.menu = nil
     }
 
-    @objc func menuItemClicked(_ sender: NSMenuItem) {
+    @objc func subMenuItemClicked(_ sender: NSMenuItem) {
         print("Clicked Menu Item: \(sender.title)")
     }
 }
