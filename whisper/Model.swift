@@ -12,10 +12,13 @@ import SwiftUI
 
 final class Model: ObservableObject {
     static let shared = Model()
+    @Published var whisperKit: WhisperKit?
     @Published var availableModels: [String] = []
     @AppStorage("selectedModel") var selectedModel: String = WhisperKit.recommendedModels().default
     @Published var availableLanguages: [String] = []
     @AppStorage("selectedLanguage") var selectedLanguage: String = "english"
+    @Published var modelState: ModelState = .unloaded
+
     
     init() {
         fetchModels()
@@ -65,8 +68,9 @@ final class Model: ObservableObject {
     }
     
     func loadModel(_ model: String) {
+        modelState = .loading
         print("Chargement du modèle \(model)")
-        
+
         Task {
             do {
                 let computeOptions = ModelComputeOptions(
@@ -74,18 +78,22 @@ final class Model: ObservableObject {
                     textDecoderCompute: .cpuAndNeuralEngine
                 )
                 let whisperKitConfig = WhisperKitConfig(model: model, computeOptions: computeOptions)
-                _ = try await WhisperKit(whisperKitConfig)
-                
+                let newWhisperKit = try await WhisperKit(whisperKitConfig)
+
                 DispatchQueue.main.async {
+                    self.whisperKit = newWhisperKit
                     print("Modèle \(model) chargé avec succès.")
+                    self.modelState = .loaded
                 }
             } catch {
                 DispatchQueue.main.async {
                     print("Erreur lors du chargement du modèle : \(error.localizedDescription)")
+                    self.modelState = .unloaded
                 }
             }
         }
     }
+
     
     func addElementOnMenu(menu: NSMenu) {
         let modelMenuItem = NSMenuItem(title: "Model", action: nil, keyEquivalent: "")
