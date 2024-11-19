@@ -25,6 +25,7 @@ struct ContentView: View {
     @State private var modelState: ModelState = .unloaded
     @State private var loadingProgressValue: Float = 0.0
     @State private var whisperKit: WhisperKit?
+    @State private var inProgress: Bool = false
     
     var body: some View {
         
@@ -42,6 +43,7 @@ struct ContentView: View {
                 .onChange(of: selectedModel) { newValue in
                     loadModel(selectedModel)
                 }
+                .disabled(inProgress)
                 
                 Picker("", selection: $selectedLanguage) {
                     ForEach(availableLanguages, id: \.self) { language in
@@ -50,6 +52,7 @@ struct ContentView: View {
                 }
                 .pickerStyle(MenuPickerStyle())
                 .padding()
+                .disabled(inProgress)
             }
             
             Spacer()
@@ -69,7 +72,7 @@ struct ContentView: View {
             
             ZStack {
                 RoundedRectangle(cornerRadius: 10)
-                    .fill(Color.gray.opacity(0.2))
+                    .fill(Color.gray.opacity(inProgress ? 0.5 : 0.2))
                     .frame(maxWidth: 100.0, maxHeight: 50.0)
                     .overlay(
                         Image(systemName: "document.fill")
@@ -99,6 +102,8 @@ struct ContentView: View {
     }
     
     private func transcribeAudio(from audioURL: URL) {
+        print(audioURL)
+        self.inProgress = true
         Task {
             do {
                 guard let whisperKit = whisperKit else {
@@ -133,6 +138,7 @@ struct ContentView: View {
                 self.transcription = "Erreur lors de la transcription : \(error)"
             }
         }
+        self.inProgress = false
     }
     
     private func fetchModels() {
@@ -178,7 +184,11 @@ struct ContentView: View {
         
         Task {
             do {
-                let whisperKitConfig = WhisperKitConfig(model: model)
+                let computeOptions = ModelComputeOptions(
+                    audioEncoderCompute: .cpuAndNeuralEngine,
+                    textDecoderCompute: .cpuAndNeuralEngine
+                )
+                let whisperKitConfig = WhisperKitConfig(model: model, computeOptions: computeOptions)
                 whisperKit = try await WhisperKit(whisperKitConfig)
                 
                 print("Modèle \(model) chargé avec succès.")
