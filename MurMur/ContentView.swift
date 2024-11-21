@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  whisper
+//  MurMur
 //
 //  Created by Valentin Vanhove on 18/11/2024.
 //
@@ -29,9 +29,12 @@ struct ContentView: View {
                 .padding(.bottom, 10)
                 .onDrop(of: [.fileURL], isTargeted: nil) { providers in
                     if let provider = providers.first {
-                        provider.loadObject(ofClass: URL.self) { url, _ in
-                            if let audioURL = url as? URL {
-                                model.transcribeAudio(from: audioURL)
+                        _ = provider.loadObject(ofClass: URL.self) { url, _ in
+                            if let audioURL = url {
+                                if model.modelState.description == "Loaded" {
+                                    model.clear()  // Appeler clear()
+                                    model.transcribeAudio(from: audioURL)  // Lancer la transcription
+                                }
                             }
                         }
                     }
@@ -69,6 +72,7 @@ struct ContentView: View {
                         Text(model.selectedLanguage)
                         Text("•")
                         Text(model.modelState.description)
+                            .foregroundColor(model.modelState.description != "Loaded" ? Color.red : .secondary)
                     }
                     HStack {
                         Text(WhisperKit.deviceName())
@@ -81,11 +85,6 @@ struct ContentView: View {
                 .foregroundColor(.secondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-    
-    
-    private func clear() {
-        model.transcription.removeAll()
     }
 }
 

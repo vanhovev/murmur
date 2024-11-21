@@ -1,6 +1,6 @@
 //
-//  whisperApp.swift
-//  whisper
+//  MurMurApp.swift
+//  MurMur
 //
 //  Created by Valentin Vanhove on 18/11/2024.
 //
@@ -48,9 +48,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             let hostingController = NSHostingController(rootView: contentView)
             window = NSWindow(contentViewController: hostingController)
             window?.setContentSize(NSSize(width: 500, height: 350))
-            window?.title = "M-Whisper"
+            window?.title = "MurMur"
             window?.level = .floating
             window?.makeKeyAndOrderFront(nil)
+            window?.delegate = self
         } else {
             window?.makeKeyAndOrderFront(nil)
         }
@@ -71,5 +72,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     @objc func subMenuItemClicked(_ sender: NSMenuItem) {
         print("Clicked Menu Item: \(sender.title)")
+    }
+}
+
+extension AppDelegate: NSWindowDelegate {
+    func windowWillClose(_ notification: Notification) {
+        Model.shared.clear()
     }
 }

@@ -1,6 +1,6 @@
 //
 //  Model.swift
-//  whisper
+//  MurMur
 //
 //  Created by Valentin Vanhove on 18/11/2024.
 //
@@ -16,11 +16,11 @@ final class Model: ObservableObject {
     @Published var isTranscribing: Bool = false
     @Published var transcription: String = ""
 
-    @Published var availableModels: [String] = []
-    @AppStorage("selectedModel") var selectedModel: String = WhisperKit.recommendedModels().default
+    @Published var availableModels: [String] = ["openai_whisper-tiny", "openai_whisper-small", "openai_whisper-base"]
+    @AppStorage("selectedModel") var selectedModel: String = "openai_whisper-tiny"
 
     @Published var availableLanguages: [String] = []
-    @AppStorage("selectedLanguage") var selectedLanguage: String = "english"
+    @AppStorage("selectedLanguage") var selectedLanguage: String = "french"
 
     @Published var modelState: ModelState = .unloaded
     @Published private var modelStorage: String = "huggingface/models/argmaxinc/whisperkit-coreml"
@@ -53,13 +53,10 @@ final class Model: ObservableObject {
     func fetchModels() {
         Task {
             do {
-                let remoteModels = await WhisperKit.recommendedRemoteModels()
                 let localModelsList = await fetchLocalModels()
 
                 await MainActor.run {
                     self.localModels = localModelsList
-                    self.availableModels = remoteModels.supported
-                    self.availableModels.append(contentsOf: self.localModels)
                     if let selectedModel = self.availableModels.first(where: { $0 == self.selectedModel }) {
                         self.loadModel(selectedModel)
                     } else if let firstLocalModel = self.localModels.first {
@@ -80,7 +77,6 @@ final class Model: ObservableObject {
     }
 
     func loadModel(_ model: String, redownload: Bool = false) {
-        print("Loading model: \(model)")
         Task {
             await MainActor.run {
                 whisperKit = nil
@@ -116,9 +112,6 @@ final class Model: ObservableObject {
 
             var folder: URL?
 
-            print("localModels: \(localModels)")
-            print("model: \(model)")
-
             // Check if the model is available locally
             if localModels.contains(model) && !redownload {
                 // Get local model folder URL from localModels
@@ -135,7 +128,7 @@ final class Model: ObservableObject {
                 })
             }
 
-            print("Initializing model")
+            print("Initializing modelToLoad")
 
             await MainActor.run {
                 modelState = .downloaded
@@ -150,11 +143,11 @@ final class Model: ObservableObject {
                     modelState = .prewarming
                 }
 
-                // Prewarm models
+                // Prewarm modelToLoad
                 do {
                     try await whisperKit!.prewarmModels()
                 } catch {
-                    print("Error prewarming models, retrying: \(error.localizedDescription)")
+                    print("Error prewarming modelToLoad, retrying: \(error.localizedDescription)")
                     if !redownload {
                         loadModel(model, redownload: true)
                         return
@@ -278,9 +271,15 @@ final class Model: ObservableObject {
 
         modelMenuItem.submenu = modelMenu
         languageMenuItem.submenu = languageMenu
+        
+        let modelFolderItem = NSMenuItem(title: "MurMur Folder", action: #selector(openModelFolder), keyEquivalent: "")
+        modelFolderItem.target = self
 
         menu.addItem(modelMenuItem)
         menu.addItem(languageMenuItem)
+        menu.addItem(NSMenuItem.separator())
+
+        menu.addItem(modelFolderItem)
     }
 
     @objc func modelMenuItemClicked(_ sender: NSMenuItem) {
@@ -299,6 +298,13 @@ final class Model: ObservableObject {
             selectedLanguage = language
         }
     }
+    
+    @objc func openModelFolder() {
+        let folderURL = whisperKit?.modelFolder ?? (localModels.contains(selectedModel) ? URL(fileURLWithPath: localModelPath) : nil)
+        if let folder = folderURL {
+            NSWorkspace.shared.open(folder)
+        }
+    }
 
     func updateModelMenuState(_ menu: NSMenu) {
         if let modelMenu = menu.item(at: 0)?.submenu {
@@ -309,4 +315,9 @@ final class Model: ObservableObject {
             }
         }
     }
+    func clear() {
+        DispatchQueue.main.async {
+            self.transcription = ""
+        }
+        }
 }
