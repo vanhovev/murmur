@@ -82,18 +82,6 @@ struct Sample: View {
     @State private var confirmedSegments: [TranscriptionSegment] = []
     @State private var unconfirmedSegments: [TranscriptionSegment] = []
 
-    // MARK: Eager mode properties
-
-    @State private var eagerResults: [TranscriptionResult?] = []
-    @State private var prevResult: TranscriptionResult?
-    @State private var lastAgreedSeconds: Float = 0.0
-    @State private var prevWords: [WordTiming] = []
-    @State private var lastAgreedWords: [WordTiming] = []
-    @State private var confirmedWords: [WordTiming] = []
-    @State private var confirmedText: String = ""
-    @State private var hypothesisWords: [WordTiming] = []
-    @State private var hypothesisText: String = ""
-
     // MARK: UI properties
 
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
@@ -149,16 +137,6 @@ struct Sample: View {
         bufferSeconds = 0
         confirmedSegments = []
         unconfirmedSegments = []
-
-        eagerResults = []
-        prevResult = nil
-        lastAgreedSeconds = 0.0
-        prevWords = []
-        lastAgreedWords = []
-        confirmedWords = []
-        confirmedText = ""
-        hypothesisWords = []
-        hypothesisText = ""
     }
 
     var body: some View {
@@ -237,7 +215,6 @@ struct Sample: View {
                             UIPasteboard.general.string = confirmedText + hypothesisText
                             #elseif os(macOS)
                             NSPasteboard.general.clearContents()
-                            NSPasteboard.general.setString(confirmedText + hypothesisText, forType: .string)
                             #endif
                         }
                     } label: {
@@ -286,24 +263,6 @@ struct Sample: View {
 
             ScrollView {
                 VStack(alignment: .leading) {
-                    if enableEagerDecoding && isStreamMode {
-                        let startSeconds = eagerResults.first??.segments.first?.start ?? 0
-                        let endSeconds = lastAgreedSeconds > 0 ? lastAgreedSeconds : eagerResults.last??.segments.last?.end ?? 0
-                        let timestampText = (enableTimestamps && eagerResults.first != nil) ? "[\(String(format: "%.2f", startSeconds)) --> \(String(format: "%.2f", endSeconds))]" : ""
-                        Text("\(timestampText) \(Text(confirmedText).fontWeight(.bold))\(Text(hypothesisText).fontWeight(.bold).foregroundColor(.gray))")
-                            .font(.headline)
-                            .multilineTextAlignment(.leading)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-
-                        if enableDecoderPreview {
-                            Text("\(currentText)")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                                .multilineTextAlignment(.leading)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.top)
-                        }
-                    } else {
                         ForEach(Array(confirmedSegments.enumerated()), id: \.element) { _, segment in
                             let timestampText = enableTimestamps ? "[\(String(format: "%.2f", segment.start)) --> \(String(format: "%.2f", segment.end))]" : ""
                             Text(timestampText + segment.text)
@@ -329,7 +288,6 @@ struct Sample: View {
                                 .multilineTextAlignment(.leading)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
-                    }
                 }
             }
             .frame(maxWidth: .infinity)
@@ -603,109 +561,6 @@ struct Sample: View {
                                 .disabled(modelState != .loaded)
                                 .frame(minWidth: 0, maxWidth: .infinity)
                                 .padding()
-
-                                ZStack {
-                                    Button(action: {
-                                        withAnimation {
-                                            toggleRecording(shouldLoop: false)
-                                        }
-                                    }) {
-                                        if !isRecording {
-                                            Text("RECORD")
-                                                .font(.headline)
-                                                .foregroundColor(color)
-                                                .padding()
-                                                .cornerRadius(40)
-                                                .frame(minWidth: 70, minHeight: 70)
-                                                .overlay(
-                                                    RoundedRectangle(cornerRadius: 40)
-                                                        .stroke(color, lineWidth: 4)
-                                                )
-                                        } else {
-                                            Image(systemName: "stop.circle.fill")
-                                                .resizable()
-                                                .scaledToFit()
-                                                .frame(width: 70, height: 70)
-                                                .padding()
-                                                .foregroundColor(modelState != .loaded ? .gray : .red)
-                                        }
-                                    }
-                                    .lineLimit(1)
-                                    .contentTransition(.symbolEffect(.replace))
-                                    .buttonStyle(BorderlessButtonStyle())
-                                    .disabled(modelState != .loaded)
-                                    .frame(minWidth: 0, maxWidth: .infinity)
-                                    .padding()
-
-                                    if isRecording {
-                                        Text("\(String(format: "%.1f", bufferSeconds)) s")
-                                            .font(.caption)
-                                            .foregroundColor(.gray)
-                                            .offset(x: 80, y: 0)
-                                    }
-                                }
-                            }
-                        }
-                    case "Stream":
-                        VStack {
-                            HStack {
-                                Button {
-                                    resetState()
-                                } label: {
-                                    Label("Reset", systemImage: "arrow.clockwise")
-                                }
-                                .frame(minWidth: 0, maxWidth: .infinity)
-                                .buttonStyle(.borderless)
-
-                                Spacer()
-
-                                audioDevicesView
-
-                                Spacer()
-
-                                VStack {
-                                    Button {
-                                        showAdvancedOptions.toggle()
-                                    } label: {
-                                        Label("Settings", systemImage: "slider.horizontal.3")
-                                    }
-                                    .frame(minWidth: 0, maxWidth: .infinity)
-                                    .buttonStyle(.borderless)
-                                }
-                            }
-
-                            ZStack {
-                                Button {
-                                    withAnimation {
-                                        toggleRecording(shouldLoop: true)
-                                    }
-                                } label: {
-                                    Image(systemName: !isRecording ? "record.circle" : "stop.circle.fill")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 70, height: 70)
-                                        .padding()
-                                        .foregroundColor(modelState != .loaded ? .gray : .red)
-                                }
-                                .contentTransition(.symbolEffect(.replace))
-                                .buttonStyle(BorderlessButtonStyle())
-                                .disabled(modelState != .loaded)
-                                .frame(minWidth: 0, maxWidth: .infinity)
-
-                                VStack {
-                                    Text("Encoder runs: \(currentEncodingLoops)")
-                                        .font(.caption)
-                                    Text("Decoder runs: \(currentDecodingLoops)")
-                                        .font(.caption)
-                                }
-                                .offset(x: -120, y: 0)
-
-                                if isRecording {
-                                    Text("\(String(format: "%.1f", bufferSeconds)) s")
-                                        .font(.caption)
-                                        .foregroundColor(.gray)
-                                        .offset(x: 80, y: 0)
-                                }
                             }
                         }
                     default:
@@ -715,12 +570,6 @@ struct Sample: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.horizontal)
-        .sheet(isPresented: $showAdvancedOptions, content: {
-            advancedSettingsView
-                .presentationDetents([.medium, .large])
-                .presentationBackgroundInteraction(.enabled)
-                .presentationContentInteraction(.scrolls)
-        })
     }
 
     var basicSettingsView: some View {
@@ -770,209 +619,6 @@ struct Sample: View {
             }
             .padding()
             .frame(maxWidth: .infinity)
-        }
-    }
-
-    var advancedSettingsView: some View {
-        #if os(iOS)
-        NavigationView {
-            settingsForm
-                .navigationBarTitleDisplayMode(.inline)
-        }
-        #else
-        VStack {
-            Text("Decoding Options")
-                .font(.title2)
-                .padding()
-            settingsForm
-                .frame(minWidth: 500, minHeight: 500)
-        }
-        #endif
-    }
-
-    var settingsForm: some View {
-        List {
-            HStack {
-                Text("Show Timestamps")
-                InfoButton("Toggling this will include/exclude timestamps in both the UI and the prefill tokens.\nEither <|notimestamps|> or <|0.00|> will be forced based on this setting unless \"Prompt Prefill\" is de-selected.")
-                Spacer()
-                Toggle("", isOn: $enableTimestamps)
-            }
-            .padding(.horizontal)
-
-            HStack {
-                Text("Special Characters")
-                InfoButton("Toggling this will include/exclude special characters in the transcription text.")
-                Spacer()
-                Toggle("", isOn: $enableSpecialCharacters)
-            }
-            .padding(.horizontal)
-
-            HStack {
-                Text("Show Decoder Preview")
-                InfoButton("Toggling this will show a small preview of the decoder output in the UI under the transcribe. This can be useful for debugging.")
-                Spacer()
-                Toggle("", isOn: $enableDecoderPreview)
-            }
-            .padding(.horizontal)
-
-            HStack {
-                Text("Prompt Prefill")
-                InfoButton("When Prompt Prefill is on, it will force the task, language, and timestamp tokens in the decoding loop. \nToggle it off if you'd like the model to generate those tokens itself instead.")
-                Spacer()
-                Toggle("", isOn: $enablePromptPrefill)
-            }
-            .padding(.horizontal)
-
-            HStack {
-                Text("Cache Prefill")
-                InfoButton("When Cache Prefill is on, the decoder will try to use a lookup table of pre-computed KV caches instead of computing them during the decoding loop. \nThis allows the model to skip the compute required to force the initial prefill tokens, and can speed up inference")
-                Spacer()
-                Toggle("", isOn: $enableCachePrefill)
-            }
-            .padding(.horizontal)
-
-            VStack {
-                HStack {
-                    Text("Chunking Strategy")
-                    InfoButton("Select the strategy to use for chunking audio data. If VAD is selected, the audio will be chunked based on voice activity (split on silent portions).")
-                    Spacer()
-                    Picker("", selection: $chunkingStrategy) {
-                        Text("None").tag(ChunkingStrategy.none)
-                        Text("VAD").tag(ChunkingStrategy.vad)
-                    }
-                    .pickerStyle(SegmentedPickerStyle())
-                }
-                HStack {
-                    Text("Workers:")
-                    Slider(value: $concurrentWorkerCount, in: 0...32, step: 1)
-                    Text(concurrentWorkerCount.formatted(.number))
-                    InfoButton("How many workers to run transcription concurrently. Higher values increase memory usage but saturate the selected compute unit more, resulting in faster transcriptions. A value of 0 will use unlimited workers.")
-                }
-            }
-            .padding(.horizontal)
-            .padding(.bottom)
-
-            VStack {
-                Text("Starting Temperature")
-                HStack {
-                    Slider(value: $temperatureStart, in: 0...1, step: 0.1)
-                    Text(temperatureStart.formatted(.number))
-                    InfoButton("Controls the initial randomness of the decoding loop token selection.\nA higher temperature will result in more random choices for tokens, and can improve accuracy.")
-                }
-            }
-            .padding(.horizontal)
-
-            VStack {
-                Text("Max Fallback Count")
-                HStack {
-                    Slider(value: $fallbackCount, in: 0...5, step: 1)
-                    Text(fallbackCount.formatted(.number))
-                        .frame(width: 30)
-                    InfoButton("Controls how many times the decoder will fallback to a higher temperature if any of the decoding thresholds are exceeded.\n Higher values will cause the decoder to run multiple times on the same audio, which can improve accuracy at the cost of speed.")
-                }
-            }
-            .padding(.horizontal)
-
-            VStack {
-                Text("Compression Check Tokens")
-                HStack {
-                    Slider(value: $compressionCheckWindow, in: 0...100, step: 5)
-                    Text(compressionCheckWindow.formatted(.number))
-                        .frame(width: 30)
-                    InfoButton("Amount of tokens to use when checking for whether the model is stuck in a repetition loop.\nRepetition is checked by using zlib compressed size of the text compared to non-compressed value.\n Lower values will catch repetitions sooner, but too low will miss repetition loops of phrases longer than the window.")
-                }
-            }
-            .padding(.horizontal)
-
-            VStack {
-                Text("Max Tokens Per Loop")
-                HStack {
-                    Slider(value: $sampleLength, in: 0...Double(min(whisperKit?.textDecoder.kvCacheMaxSequenceLength ?? Constants.maxTokenContext, Constants.maxTokenContext)), step: 10)
-                    Text(sampleLength.formatted(.number))
-                        .frame(width: 30)
-                    InfoButton("Maximum number of tokens to generate per loop.\nCan be lowered based on the type of speech in order to further prevent repetition loops from going too long.")
-                }
-            }
-            .padding(.horizontal)
-
-            VStack {
-                Text("Silence Threshold")
-                HStack {
-                    Slider(value: $silenceThreshold, in: 0...1, step: 0.05)
-                    Text(silenceThreshold.formatted(.number))
-                        .frame(width: 30)
-                    InfoButton("Relative silence threshold for the audio. \n Baseline is set by the quietest 100ms in the previous 2 seconds.")
-                }
-            }
-            .padding(.horizontal)
-
-            VStack {
-                Text("Realtime Delay Interval")
-                HStack {
-                    Slider(value: $realtimeDelayInterval, in: 0...30, step: 1)
-                    Text(realtimeDelayInterval.formatted(.number))
-                        .frame(width: 30)
-                    InfoButton("Controls how long to wait for audio buffer to fill before running successive loops in streaming mode.\nHigher values will reduce the number of loops run per second, saving battery at the cost of higher latency.")
-                }
-            }
-            .padding(.horizontal)
-
-            Section(header: Text("Experimental")) {
-                HStack {
-                    Text("Eager Streaming Mode")
-                    InfoButton("When Eager Streaming Mode is on, the transcription will be updated more frequently, but with potentially less accurate results.")
-                    Spacer()
-                    Toggle("", isOn: $enableEagerDecoding)
-                }
-                .padding(.horizontal)
-                .padding(.top)
-
-                VStack {
-                    Text("Token Confirmations")
-                    HStack {
-                        Slider(value: $tokenConfirmationsNeeded, in: 1...10, step: 1)
-                        Text(tokenConfirmationsNeeded.formatted(.number))
-                            .frame(width: 30)
-                        InfoButton("Controls the number of consecutive tokens required to agree between decoder loops before considering them as confirmed in the streaming process.")
-                    }
-                }
-                .padding(.horizontal)
-            }
-        }
-        .navigationTitle("Decoding Options")
-        .toolbar(content: {
-            ToolbarItem {
-                Button {
-                    showAdvancedOptions = false
-                } label: {
-                    Label("Done", systemImage: "xmark.circle.fill")
-                        .foregroundColor(.primary)
-                }
-            }
-        })
-    }
-
-    struct InfoButton: View {
-        var infoText: String
-        @State private var showInfo = false
-
-        init(_ infoText: String) {
-            self.infoText = infoText
-        }
-
-        var body: some View {
-            Button(action: {
-                showInfo = true
-            }) {
-                Image(systemName: "info.circle")
-                    .foregroundColor(.blue)
-            }
-            .popover(isPresented: $showInfo) {
-                Text(infoText)
-                    .padding()
-            }
-            .buttonStyle(BorderlessButtonStyle())
         }
     }
 
@@ -1027,14 +673,6 @@ struct Sample: View {
     }
 
     func loadModel(_ model: String, redownload: Bool = false) {
-        print("Selected Model: \(UserDefaults.standard.string(forKey: "selectedModel") ?? "nil")")
-        print("""
-            Computing Options:
-            - Mel Spectrogram:  \(getComputeOptions().melCompute.description)
-            - Audio Encoder:    \(getComputeOptions().audioEncoderCompute.description)
-            - Text Decoder:     \(getComputeOptions().textDecoderCompute.description)
-            - Prefill Data:     \(getComputeOptions().prefillCompute.description)
-        """)
 
         whisperKit = nil
         Task {
@@ -1054,7 +692,6 @@ struct Sample: View {
             // Check if the model is available locally
             if localModels.contains(model) && !redownload {
                 // Get local model folder URL from localModels
-                // TODO: Make this configurable in the UI
                 folder = URL(fileURLWithPath: localModelPath).appendingPathComponent(model)
             } else {
                 // Download the model
@@ -1219,90 +856,10 @@ struct Sample: View {
         }
     }
 
-    func toggleRecording(shouldLoop: Bool) {
-        isRecording.toggle()
-
-        if isRecording {
-            resetState()
-            startRecording(shouldLoop)
-        } else {
-            stopRecording(shouldLoop)
-        }
-    }
-
-    func startRecording(_ loop: Bool) {
-        if let audioProcessor = whisperKit?.audioProcessor {
-            Task(priority: .userInitiated) {
-                guard await AudioProcessor.requestRecordPermission() else {
-                    print("Microphone access was not granted.")
-                    return
-                }
-
-                var deviceId: DeviceID?
-                #if os(macOS)
-                if selectedAudioInput != "No Audio Input",
-                   let devices = audioDevices,
-                   let device = devices.first(where: { $0.name == selectedAudioInput })
-                {
-                    deviceId = device.id
-                }
-
-                // There is no built-in microphone
-                if deviceId == nil {
-                    throw WhisperError.microphoneUnavailable()
-                }
-                #endif
-
-                try? audioProcessor.startRecordingLive(inputDeviceID: deviceId) { _ in
-                    DispatchQueue.main.async {
-                        bufferEnergy = whisperKit?.audioProcessor.relativeEnergy ?? []
-                        bufferSeconds = Double(whisperKit?.audioProcessor.audioSamples.count ?? 0) / Double(WhisperKit.sampleRate)
-                    }
-                }
-
-                // Delay the timer start by 1 second
-                isRecording = true
-                isTranscribing = true
-                if loop {
-                    realtimeLoop()
-                }
-            }
-        }
-    }
-
-    func stopRecording(_ loop: Bool) {
-        isRecording = false
-        stopRealtimeTranscription()
-        if let audioProcessor = whisperKit?.audioProcessor {
-            audioProcessor.stopRecording()
-        }
-
-        // If not looping, transcribe the full buffer
-        if !loop {
-            transcribeTask = Task {
-                isTranscribing = true
-                do {
-                    try await transcribeCurrentBuffer()
-                } catch {
-                    print("Error: \(error.localizedDescription)")
-                }
-                finalizeText()
-                isTranscribing = false
-            }
-        }
-
-        finalizeText()
-    }
-
     func finalizeText() {
         // Finalize unconfirmed text
         Task {
             await MainActor.run {
-                if hypothesisText != "" {
-                    confirmedText += hypothesisText
-                    hypothesisText = ""
-                }
-
                 if !unconfirmedSegments.isEmpty {
                     confirmedSegments.append(contentsOf: unconfirmedSegments)
                     unconfirmedSegments = []
@@ -1344,363 +901,93 @@ struct Sample: View {
             confirmedSegments = segments
         }
     }
-
+    
     func transcribeAudioSamples(_ samples: [Float]) async throws -> TranscriptionResult? {
-        guard let whisperKit = whisperKit else { return nil }
+            guard let whisperKit = whisperKit else { return nil }
 
-        let languageCode = Constants.languages[selectedLanguage, default: Constants.defaultLanguageCode]
-        let task: DecodingTask = selectedTask == "transcribe" ? .transcribe : .translate
-        let seekClip: [Float] = [lastConfirmedSegmentEndSeconds]
+            let languageCode = Constants.languages[selectedLanguage, default: Constants.defaultLanguageCode]
+            let task: DecodingTask = selectedTask == "transcribe" ? .transcribe : .translate
+            let seekClip: [Float] = [lastConfirmedSegmentEndSeconds]
 
-        let options = DecodingOptions(
-            verbose: true,
-            task: task,
-            language: languageCode,
-            temperature: Float(temperatureStart),
-            temperatureFallbackCount: Int(fallbackCount),
-            sampleLength: Int(sampleLength),
-            usePrefillPrompt: enablePromptPrefill,
-            usePrefillCache: enableCachePrefill,
-            skipSpecialTokens: !enableSpecialCharacters,
-            withoutTimestamps: !enableTimestamps,
-            wordTimestamps: true,
-            clipTimestamps: seekClip,
-            concurrentWorkerCount: Int(concurrentWorkerCount),
-            chunkingStrategy: chunkingStrategy
-        )
-
-        // Early stopping checks
-        let decodingCallback: ((TranscriptionProgress) -> Bool?) = { (progress: TranscriptionProgress) in
-            DispatchQueue.main.async {
-                let fallbacks = Int(progress.timings.totalDecodingFallbacks)
-                let chunkId = isStreamMode ? 0 : progress.windowId
-
-                // First check if this is a new window for the same chunk, append if so
-                var updatedChunk = (chunkText: [progress.text], fallbacks: fallbacks)
-                if var currentChunk = currentChunks[chunkId], let previousChunkText = currentChunk.chunkText.last {
-                    if progress.text.count >= previousChunkText.count {
-                        // This is the same window of an existing chunk, so we just update the last value
-                        currentChunk.chunkText[currentChunk.chunkText.endIndex - 1] = progress.text
-                        updatedChunk = currentChunk
-                    } else {
-                        // This is either a new window or a fallback (only in streaming mode)
-                        if fallbacks == currentChunk.fallbacks && isStreamMode {
-                            // New window (since fallbacks havent changed)
-                            updatedChunk.chunkText = [updatedChunk.chunkText.first ?? "" + progress.text]
-                        } else {
-                            // Fallback, overwrite the previous bad text
-                            updatedChunk.chunkText[currentChunk.chunkText.endIndex - 1] = progress.text
-                            updatedChunk.fallbacks = fallbacks
-                            print("Fallback occured: \(fallbacks)")
-                        }
-                    }
-                }
-
-                // Set the new text for the chunk
-                currentChunks[chunkId] = updatedChunk
-                let joinedChunks = currentChunks.sorted { $0.key < $1.key }.flatMap { $0.value.chunkText }.joined(separator: "\n")
-
-                currentText = joinedChunks
-                currentFallbacks = fallbacks
-                currentDecodingLoops += 1
-            }
-
-            // Check early stopping
-            let currentTokens = progress.tokens
-            let checkWindow = Int(compressionCheckWindow)
-            if currentTokens.count > checkWindow {
-                let checkTokens: [Int] = currentTokens.suffix(checkWindow)
-                let compressionRatio = compressionRatio(of: checkTokens)
-                if compressionRatio > options.compressionRatioThreshold! {
-                    Logging.debug("Early stopping due to compression threshold")
-                    return false
-                }
-            }
-            if progress.avgLogprob! < options.logProbThreshold! {
-                Logging.debug("Early stopping due to logprob threshold")
-                return false
-            }
-            return nil
-        }
-
-        let transcriptionResults: [TranscriptionResult] = try await whisperKit.transcribe(
-            audioArray: samples,
-            decodeOptions: options,
-            callback: decodingCallback
-        )
-
-        let mergedResults = mergeTranscriptionResults(transcriptionResults)
-
-        return mergedResults
-    }
-
-    // MARK: Streaming Logic
-
-    func realtimeLoop() {
-        transcriptionTask = Task {
-            while isRecording && isTranscribing {
-                do {
-                    try await transcribeCurrentBuffer(delayInterval: Float(realtimeDelayInterval))
-                } catch {
-                    print("Error: \(error.localizedDescription)")
-                    break
-                }
-            }
-        }
-    }
-
-    func stopRealtimeTranscription() {
-        isTranscribing = false
-        transcriptionTask?.cancel()
-    }
-
-    func transcribeCurrentBuffer(delayInterval: Float = 1.0) async throws {
-        guard let whisperKit = whisperKit else { return }
-
-        // Retrieve the current audio buffer from the audio processor
-        let currentBuffer = whisperKit.audioProcessor.audioSamples
-
-        // Calculate the size and duration of the next buffer segment
-        let nextBufferSize = currentBuffer.count - lastBufferSize
-        let nextBufferSeconds = Float(nextBufferSize) / Float(WhisperKit.sampleRate)
-
-        // Only run the transcribe if the next buffer has at least `delayInterval` seconds of audio
-        guard nextBufferSeconds > delayInterval else {
-            await MainActor.run {
-                if currentText == "" {
-                    currentText = "Waiting for speech..."
-                }
-            }
-            try await Task.sleep(nanoseconds: 100_000_000) // sleep for 100ms for next buffer
-            return
-        }
-
-        if useVAD {
-            let voiceDetected = AudioProcessor.isVoiceDetected(
-                in: whisperKit.audioProcessor.relativeEnergy,
-                nextBufferInSeconds: nextBufferSeconds,
-                silenceThreshold: Float(silenceThreshold)
+            let options = DecodingOptions(
+                verbose: true,
+                task: task,
+                language: languageCode,
+                temperature: Float(temperatureStart),
+                temperatureFallbackCount: Int(fallbackCount),
+                sampleLength: Int(sampleLength),
+                usePrefillPrompt: enablePromptPrefill,
+                usePrefillCache: enableCachePrefill,
+                skipSpecialTokens: !enableSpecialCharacters,
+                withoutTimestamps: !enableTimestamps,
+                wordTimestamps: true,
+                clipTimestamps: seekClip,
+                concurrentWorkerCount: Int(concurrentWorkerCount),
+                chunkingStrategy: chunkingStrategy
             )
-            // Only run the transcribe if the next buffer has voice
-            guard voiceDetected else {
-                await MainActor.run {
-                    if currentText == "" {
-                        currentText = "Waiting for speech..."
-                    }
-                }
 
-                // TODO: Implement silence buffer purging
-//                if nextBufferSeconds > 30 {
-//                    // This is a completely silent segment of 30s, so we can purge the audio and confirm anything pending
-//                    lastConfirmedSegmentEndSeconds = 0
-//                    whisperKit.audioProcessor.purgeAudioSamples(keepingLast: 2 * WhisperKit.sampleRate) // keep last 2s to include VAD overlap
-//                    currentBuffer = whisperKit.audioProcessor.audioSamples
-//                    lastBufferSize = 0
-//                    confirmedSegments.append(contentsOf: unconfirmedSegments)
-//                    unconfirmedSegments = []
-//                }
+            // Early stopping checks
+            let decodingCallback: ((TranscriptionProgress) -> Bool?) = { (progress: TranscriptionProgress) in
+                DispatchQueue.main.async {
+                    let fallbacks = Int(progress.timings.totalDecodingFallbacks)
+                    let chunkId = isStreamMode ? 0 : progress.windowId
 
-                // Sleep for 100ms and check the next buffer
-                try await Task.sleep(nanoseconds: 100_000_000)
-                return
-            }
-        }
-
-        // Store this for next iterations VAD
-        lastBufferSize = currentBuffer.count
-
-        if enableEagerDecoding && isStreamMode {
-            // Run realtime transcribe using word timestamps for segmentation
-            let transcription = try await transcribeEagerMode(Array(currentBuffer))
-            await MainActor.run {
-                currentText = ""
-                tokensPerSecond = transcription?.timings.tokensPerSecond ?? 0
-                firstTokenTime = transcription?.timings.firstTokenTime ?? 0
-                modelLoadingTime = transcription?.timings.modelLoading ?? 0
-                pipelineStart = transcription?.timings.pipelineStart ?? 0
-                currentLag = transcription?.timings.decodingLoop ?? 0
-                currentEncodingLoops = Int(transcription?.timings.totalEncodingRuns ?? 0)
-
-                let totalAudio = Double(currentBuffer.count) / Double(WhisperKit.sampleRate)
-                totalInferenceTime = transcription?.timings.fullPipeline ?? 0
-                effectiveRealTimeFactor = Double(totalInferenceTime) / totalAudio
-                effectiveSpeedFactor = totalAudio / Double(totalInferenceTime)
-            }
-        } else {
-            // Run realtime transcribe using timestamp tokens directly
-            let transcription = try await transcribeAudioSamples(Array(currentBuffer))
-
-            // We need to run this next part on the main thread
-            await MainActor.run {
-                currentText = ""
-                guard let segments = transcription?.segments else {
-                    return
-                }
-
-                tokensPerSecond = transcription?.timings.tokensPerSecond ?? 0
-                firstTokenTime = transcription?.timings.firstTokenTime ?? 0
-                modelLoadingTime = transcription?.timings.modelLoading ?? 0
-                pipelineStart = transcription?.timings.pipelineStart ?? 0
-                currentLag = transcription?.timings.decodingLoop ?? 0
-                currentEncodingLoops += Int(transcription?.timings.totalEncodingRuns ?? 0)
-
-                let totalAudio = Double(currentBuffer.count) / Double(WhisperKit.sampleRate)
-                totalInferenceTime += transcription?.timings.fullPipeline ?? 0
-                effectiveRealTimeFactor = Double(totalInferenceTime) / totalAudio
-                effectiveSpeedFactor = totalAudio / Double(totalInferenceTime)
-
-                // Logic for moving segments to confirmedSegments
-                if segments.count > requiredSegmentsForConfirmation {
-                    // Calculate the number of segments to confirm
-                    let numberOfSegmentsToConfirm = segments.count - requiredSegmentsForConfirmation
-
-                    // Confirm the required number of segments
-                    let confirmedSegmentsArray = Array(segments.prefix(numberOfSegmentsToConfirm))
-                    let remainingSegments = Array(segments.suffix(requiredSegmentsForConfirmation))
-
-                    // Update lastConfirmedSegmentEnd based on the last confirmed segment
-                    if let lastConfirmedSegment = confirmedSegmentsArray.last, lastConfirmedSegment.end > lastConfirmedSegmentEndSeconds {
-                        lastConfirmedSegmentEndSeconds = lastConfirmedSegment.end
-                        print("Last confirmed segment end: \(lastConfirmedSegmentEndSeconds)")
-
-                        // Add confirmed segments to the confirmedSegments array
-                        for segment in confirmedSegmentsArray {
-                            if !confirmedSegments.contains(segment: segment) {
-                                confirmedSegments.append(segment)
+                    // First check if this is a new window for the same chunk, append if so
+                    var updatedChunk = (chunkText: [progress.text], fallbacks: fallbacks)
+                    if var currentChunk = currentChunks[chunkId], let previousChunkText = currentChunk.chunkText.last {
+                        if progress.text.count >= previousChunkText.count {
+                            // This is the same window of an existing chunk, so we just update the last value
+                            currentChunk.chunkText[currentChunk.chunkText.endIndex - 1] = progress.text
+                            updatedChunk = currentChunk
+                        } else {
+                            // This is either a new window or a fallback (only in streaming mode)
+                            if fallbacks == currentChunk.fallbacks && isStreamMode {
+                                // New window (since fallbacks havent changed)
+                                updatedChunk.chunkText = [updatedChunk.chunkText.first ?? "" + progress.text]
+                            } else {
+                                // Fallback, overwrite the previous bad text
+                                updatedChunk.chunkText[currentChunk.chunkText.endIndex - 1] = progress.text
+                                updatedChunk.fallbacks = fallbacks
+                                print("Fallback occured: \(fallbacks)")
                             }
                         }
                     }
 
-                    // Update transcriptions to reflect the remaining segments
-                    unconfirmedSegments = remainingSegments
-                } else {
-                    // Handle the case where segments are fewer or equal to required
-                    unconfirmedSegments = segments
+                    // Set the new text for the chunk
+                    currentChunks[chunkId] = updatedChunk
+                    let joinedChunks = currentChunks.sorted { $0.key < $1.key }.flatMap { $0.value.chunkText }.joined(separator: "\n")
+
+                    currentText = joinedChunks
+                    currentFallbacks = fallbacks
+                    currentDecodingLoops += 1
                 }
-            }
-        }
-    }
 
-    func transcribeEagerMode(_ samples: [Float]) async throws -> TranscriptionResult? {
-        guard let whisperKit = whisperKit else { return nil }
-
-        guard whisperKit.textDecoder.supportsWordTimestamps else {
-            confirmedText = "Eager mode requires word timestamps, which are not supported by the current model: \(selectedModel)."
-            return nil
-        }
-
-        let languageCode = Constants.languages[selectedLanguage, default: Constants.defaultLanguageCode]
-        let task: DecodingTask = selectedTask == "transcribe" ? .transcribe : .translate
-        print(selectedLanguage)
-        print(languageCode)
-
-        let options = DecodingOptions(
-            verbose: true,
-            task: task,
-            language: languageCode,
-            temperature: Float(temperatureStart),
-            temperatureFallbackCount: Int(fallbackCount),
-            sampleLength: Int(sampleLength),
-            usePrefillPrompt: enablePromptPrefill,
-            usePrefillCache: enableCachePrefill,
-            skipSpecialTokens: !enableSpecialCharacters,
-            withoutTimestamps: !enableTimestamps,
-            wordTimestamps: true, // required for eager mode
-            firstTokenLogProbThreshold: -1.5, // higher threshold to prevent fallbacks from running to often
-            chunkingStrategy: ChunkingStrategy.none
-        )
-
-        // Early stopping checks
-        let decodingCallback: ((TranscriptionProgress) -> Bool?) = { progress in
-            DispatchQueue.main.async {
-                let fallbacks = Int(progress.timings.totalDecodingFallbacks)
-                if progress.text.count < currentText.count {
-                    if fallbacks == currentFallbacks {
-                        //                        self.unconfirmedText.append(currentText)
-                    } else {
-                        print("Fallback occured: \(fallbacks)")
+                // Check early stopping
+                let currentTokens = progress.tokens
+                let checkWindow = Int(compressionCheckWindow)
+                if currentTokens.count > checkWindow {
+                    let checkTokens: [Int] = currentTokens.suffix(checkWindow)
+                    let compressionRatio = compressionRatio(of: checkTokens)
+                    if compressionRatio > options.compressionRatioThreshold! {
+                        Logging.debug("Early stopping due to compression threshold")
+                        return false
                     }
                 }
-                currentText = progress.text
-                currentFallbacks = fallbacks
-                currentDecodingLoops += 1
-            }
-            // Check early stopping
-            let currentTokens = progress.tokens
-            let checkWindow = Int(compressionCheckWindow)
-            if currentTokens.count > checkWindow {
-                let checkTokens: [Int] = currentTokens.suffix(checkWindow)
-                let compressionRatio = compressionRatio(of: checkTokens)
-                if compressionRatio > options.compressionRatioThreshold! {
-                    Logging.debug("Early stopping due to compression threshold")
+                if progress.avgLogprob! < options.logProbThreshold! {
+                    Logging.debug("Early stopping due to logprob threshold")
                     return false
                 }
-            }
-            if progress.avgLogprob! < options.logProbThreshold! {
-                Logging.debug("Early stopping due to logprob threshold")
-                return false
+                return nil
             }
 
-            return nil
+            let transcriptionResults: [TranscriptionResult] = try await whisperKit.transcribe(
+                audioArray: samples,
+                decodeOptions: options,
+                callback: decodingCallback
+            )
+
+            let mergedResults = mergeTranscriptionResults(transcriptionResults)
+
+            return mergedResults
         }
-
-        Logging.info("[EagerMode] \(lastAgreedSeconds)-\(Double(samples.count) / 16000.0) seconds")
-
-        let streamingAudio = samples
-        var streamOptions = options
-        streamOptions.clipTimestamps = [lastAgreedSeconds]
-        let lastAgreedTokens = lastAgreedWords.flatMap { $0.tokens }
-        streamOptions.prefixTokens = lastAgreedTokens
-        do {
-            let transcription: TranscriptionResult? = try await whisperKit.transcribe(audioArray: streamingAudio, decodeOptions: streamOptions, callback: decodingCallback).first
-            await MainActor.run {
-                var skipAppend = false
-                if let result = transcription {
-                    hypothesisWords = result.allWords.filter { $0.start >= lastAgreedSeconds }
-
-                    if let prevResult = prevResult {
-                        prevWords = prevResult.allWords.filter { $0.start >= lastAgreedSeconds }
-                        let commonPrefix = findLongestCommonPrefix(prevWords, hypothesisWords)
-                        Logging.info("[EagerMode] Prev \"\((prevWords.map { $0.word }).joined())\"")
-                        Logging.info("[EagerMode] Next \"\((hypothesisWords.map { $0.word }).joined())\"")
-                        Logging.info("[EagerMode] Found common prefix \"\((commonPrefix.map { $0.word }).joined())\"")
-
-                        if commonPrefix.count >= Int(tokenConfirmationsNeeded) {
-                            lastAgreedWords = commonPrefix.suffix(Int(tokenConfirmationsNeeded))
-                            lastAgreedSeconds = lastAgreedWords.first!.start
-                            Logging.info("[EagerMode] Found new last agreed word \"\(lastAgreedWords.first!.word)\" at \(lastAgreedSeconds) seconds")
-
-                            confirmedWords.append(contentsOf: commonPrefix.prefix(commonPrefix.count - Int(tokenConfirmationsNeeded)))
-                            let currentWords = confirmedWords.map { $0.word }.joined()
-                            Logging.info("[EagerMode] Current:  \(lastAgreedSeconds) -> \(Double(samples.count) / 16000.0) \(currentWords)")
-                        } else {
-                            Logging.info("[EagerMode] Using same last agreed time \(lastAgreedSeconds)")
-                            skipAppend = true
-                        }
-                    }
-                    prevResult = result
-                }
-
-                if !skipAppend {
-                    eagerResults.append(transcription)
-                }
-            }
-
-            await MainActor.run {
-                let finalWords = confirmedWords.map { $0.word }.joined()
-                confirmedText = finalWords
-
-                // Accept the final hypothesis because it is the last of the available audio
-                let lastHypothesis = lastAgreedWords + findLongestDifferentSuffix(prevWords, hypothesisWords)
-                hypothesisText = lastHypothesis.map { $0.word }.joined()
-            }
-        } catch {
-            Logging.error("[EagerMode] Error: \(error)")
-            finalizeText()
-        }
-
-        let mergedResult = mergeTranscriptionResults(eagerResults, confirmedWords: confirmedWords)
-
-        return mergedResult
-    }
 }

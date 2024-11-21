@@ -13,12 +13,9 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @State private var modelStorage: String = "huggingface/models/argmaxinc/whisperkit-coreml"
     @AppStorage("selectedAudioInput") private var selectedAudioInput: String = "No Audio Input"
     
     @ObservedObject var model: Model
-    @State private var transcription: String = ""
-    @State private var isTranscribing: Bool = false
     @State private var transcribeTask: Task<Void, Never>?
     @State private var toggleIcon = false
     
@@ -34,7 +31,7 @@ struct ContentView: View {
                     if let provider = providers.first {
                         provider.loadObject(ofClass: URL.self) { url, _ in
                             if let audioURL = url as? URL {
-                                self.transcribeAudio(from: audioURL)
+                                model.transcribeAudio(from: audioURL)
                             }
                         }
                     }
@@ -42,12 +39,12 @@ struct ContentView: View {
                 }
                 .overlay(
                     VStack {
-                            if !transcription.isEmpty {
-                                Text(transcription)
+                        if !model.transcription.isEmpty {
+                            Text(model.transcription)
                                     .padding(25.0)
                                 Spacer()
                             } else {
-                                if(isTranscribing){
+                                if(model.isTranscribing){
                                     Image(systemName: "waveform")
                                         .font(.system(size: 50))
                                         .foregroundStyle(.secondary)
@@ -86,55 +83,9 @@ struct ContentView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
-    private func transcribeAudio(from audioURL: URL) {
-        print(audioURL)
-        Task {
-            await MainActor.run {
-                isTranscribing = true
-            }
-            do {
-                guard let whisperKit = model.whisperKit else {
-                    self.transcription = "Not loaded"
-                    return
-                }
-                
-                let languageCode = Constants.languages[model.selectedLanguage, default: Constants.defaultLanguageCode]
-                let options = DecodingOptions(
-                    verbose: true,
-                    task: .transcribe,
-                    language: languageCode,
-                    temperature: 0.0,
-                    temperatureFallbackCount: 5,
-                    sampleLength: 224,
-                    usePrefillPrompt: true,
-                    usePrefillCache: true,
-                    skipSpecialTokens: false,
-                    withoutTimestamps: false,
-                    wordTimestamps: true,
-                    chunkingStrategy: .vad
-                )
-                
-                print("START TRANSCRIBE")
-                let transcriptionResults = try await whisperKit.transcribe(audioPath: audioURL.path, decodeOptions: options)
-                print("END TRANSCRIBE")
-                
-                if let firstTranscription = transcriptionResults.first?.text {
-                    self.transcription = firstTranscription
-                } else {
-                    self.transcription = "Aucune transcription disponible."
-                }
-            } catch {
-                self.transcription = "Erreur lors de la transcription : \(error)"
-            }
-            
-            await MainActor.run {
-                isTranscribing = false
-            }
-        }
-    }
     
     private func clear() {
-        transcription.removeAll()
+        model.transcription.removeAll()
     }
 }
 
